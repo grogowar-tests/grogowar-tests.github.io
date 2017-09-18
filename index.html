@@ -11,6 +11,7 @@
     <br /><br />
     <input type="submit" value="send message" />
 </form>
+Result: <span id="result"></span>
 <script>
     function sub(event) {
         var message = document.getElementById('text_input').value;
@@ -21,6 +22,10 @@
     }
     document.getElementById('f').addEventListener('submit', sub);
     var myWorker = new Worker('assets/worker.js');
+    myWorker.onmessage = function(event) {
+        document.getElementById('result').innerHTML = event.data;
+        console.log('myWorker.onmessage', event.data);
+    };
 </script>
 </body>
 </html>
