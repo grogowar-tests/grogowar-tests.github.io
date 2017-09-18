@@ -5,6 +5,20 @@
     <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-<div id="main-div">Hello, world 1!</div>
+<form id="f">
+    <label for="text_input">Message: </label>
+    <input type="text" id="text_input" />
+    <br/>
+    <input type="submit" value="send message" />
+</form>
+<script>
+    function sub() {
+        var message = document.getElementById('text_input').value;
+        myWorker.postMessage(message);
+        console.log('myWorker.postMessage: ' + message);
+    }
+    document.getElementById('f').addEventListener('submit', sub);
+    var myWorker = new Worker('assets/worker.js');
+</script>
 </body>
 </html>
