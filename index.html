@@ -12,11 +12,12 @@
     <input type="submit" value="send message" />
 </form>
 <script>
-    function sub() {
+    function sub(event) {
         var message = document.getElementById('text_input').value;
         myWorker.postMessage(message);
         console.log('myWorker.postMessage: ' + message);
-        return false;
+        event.stopPropagation();
+        event.preventDefault();
     }
     document.getElementById('f').addEventListener('submit', sub);
     var myWorker = new Worker('assets/worker.js');
