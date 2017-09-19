@@ -12,6 +12,7 @@
     <input type="submit" value="send message" />
 </form>
 <input type="button" value="send all" id="send_all" />
+<br />
 Result: <span id="result"></span>
 <script>
     var myWorker;
@@ -24,7 +25,7 @@ Result: <span id="result"></span>
     }
     function send_all() {
         var message = document.getElementById('text_input').value;
-        postMessage(message);
+        postMessage(message, '*');
         console.log('postMessage (all): ' + message);
     }
     document.getElementById('f').addEventListener('submit', sub, false);
