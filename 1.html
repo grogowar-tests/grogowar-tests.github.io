@@ -7,10 +7,11 @@
 <body>
 Result: <span id="result"></span>
 <script>
-onmessage = function(event) {
+function receiveMessage(event) {
     document.getElementById('result').innerHTML = event.data;
     console.log('onmessage', event.data);
-};
+}
+window.addEventListener("message", receiveMessage, false);
 </script>
 </body>
 </html>
