@@ -25,7 +25,7 @@ Result: <span id="result"></span>
     }
     function send_all() {
         var message = document.getElementById('text_input').value;
-        postMessage(message, '*');
+        postMessage(message, 'https://grogowar-tests.github.io');
         console.log('postMessage (all): ' + message);
     }
     document.getElementById('f').addEventListener('submit', sub, false);
