@@ -11,8 +11,10 @@
     <br /><br />
     <input type="submit" value="send message" />
 </form>
+<input type="button" value="send all" id="send_all" />
 Result: <span id="result"></span>
 <script>
+    var myWorker;
     function sub(event) {
         var message = document.getElementById('text_input').value;
         myWorker.postMessage(message);
@@ -20,12 +22,18 @@ Result: <span id="result"></span>
         event.stopPropagation();
         event.preventDefault();
     }
-    document.getElementById('f').addEventListener('submit', sub);
-    var myWorker = new Worker('assets/worker.js');
+    function send_all() {
+        var message = document.getElementById('text_input').value;
+        postMessage(message);
+        console.log('postMessage (all): ' + message);
+    }
+    document.getElementById('f').addEventListener('submit', sub, false);
+    myWorker = new Worker('assets/worker.js');
     myWorker.onmessage = function(event) {
         document.getElementById('result').innerHTML = event.data;
         console.log('myWorker.onmessage', event.data);
     };
+    document.getElementById('send_all').addEventListener('click', send_all, false);
 </script>
 </body>
 </html>
