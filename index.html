@@ -12,7 +12,7 @@
     window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
     var request;
     function openDB() {
-        request = indexedDB.open('myBase', 2);
+        request = indexedDB.open('myBase', 3);
         request.onerror = function(err) {
             console.log(err);
         };
@@ -23,6 +23,7 @@
         request.onupgradeneeded = function() {
             console.log('onupgradeneeded');
             request.result.createObjectStore("MyObjectStore", {keyPath: "key"});
+            openDB();
         };
     }
 
