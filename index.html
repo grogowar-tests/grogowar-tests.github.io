@@ -5,28 +5,34 @@
     <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-<form id="f">
-    <label for="text_input">Url: </label>
-    <input type="text" id="text_input" />
-    <br /><br />
-    <input type="submit" value="send message" />
-</form>
-Result: <span id="result"></span>
+<input type="button" value="go" id="go" />
 <script>
-    var myWorker;
-    function sub(event) {
-        var message = document.getElementById('text_input').value;
-        myWorker.postMessage(message);
-        console.log('myWorker.postMessage: ' + message);
-        event.stopPropagation();
-        event.preventDefault();
+    window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    var request;
+    function openDB() {
+        request = indexedDB.open('myBase', 1);
+        request.onerror = function(err) {
+            console.log(err);
+        };
+        request.onsuccess = function() {
+            console.log('onsuccess');
+            onDbOpen();
+        };
+        request.onupgradeneeded = function() {
+            console.log('onupgradeneeded');
+            request.result.createObjectStore("MyObjectStore", {keyPath: "key"});
+            openDB();
+        };
     }
-    document.getElementById('f').addEventListener('submit', sub, false);
-    myWorker = new Worker('assets/worker.js');
-    myWorker.onmessage = function(event) {
-        document.getElementById('result').innerHTML = event.data;
-        console.log('myWorker.onmessage', event.data);
-    };
+
+    function onDbOpen() {
+        console.log('openDB');
+
+    }
+
+    document.querySelector("#go").addEventListener('click', openDB);
 </script>
 </body>
 </html>
