@@ -8,20 +8,34 @@
 <input type="button" value="go" id="go" />
 <script>
     var pr;
-
     function go() {
-        pr.then(function(arg1){
-            console.log("resolve: ", arg1);
-        }, function(arg1){
-            console.log("reject: ", arg1);
+        (pr = new Promise(function(resolve, reject){
+            var a = 1, b = 1;
+            setTimeout(function(){
+                if (a == b) {
+                    console.log('asdf');
+                    resolve("arg for resolve");
+                    console.log('zxcv');
+                    resolve("arg for resolve second time");
+                } else {
+                    console.log('asdf111');
+                    reject(new Error("arg for reject"));
+                    console.log('zxcv111');
+                }
+            }, 1000);
+        })).then(function(result){
+            console.log('then later, result: ', result);
+        }).catch(function(result){
+            console.log('catch , result: ', result);
         });
-    }
 
-    pr = new Promise(function(resolve, reject){
-        setTimeout(function(){
-            reject("arg 1");
-        }, 1000);
+        pr.then(function(result){
+            console.log('then later, result: ', result);
+        }).catch(error => {
+            console.log('catch later, result: ', error);
     });
+
+    }
 
     document.querySelector("#go").addEventListener('click', go);
 </script>
