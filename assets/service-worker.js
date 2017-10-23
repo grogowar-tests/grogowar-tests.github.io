@@ -1,8 +1,8 @@
 'use strict';
 
-self.addEventListener('install', function(event) {
+/*self.addEventListener('install', function(event) {
     event.waitUntil(self.skipWaiting());
-});
+});*/
 
 self.addEventListener('push', function (event) {
     console.log(event);

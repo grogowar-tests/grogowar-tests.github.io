@@ -6,75 +6,77 @@
 </head>
 <body>
 <script>
-function registerServiceWorker() {
-    return navigator.serviceWorker.register('assets/service-worker.js');
-}
-
-function askPermission() {
-    return new Promise(function(resolve, reject) {
-        const permissionResult = Notification.requestPermission(function(result) {
-            resolve(result);
-        });
-        if (permissionResult) {
-            permissionResult.then(resolve, reject);
-        }
-    })
-            .then(function(permissionResult) {
-                if (permissionResult !== 'granted') {
-                    throw new Error('We weren\'t granted permission.');
-                }
-            });
-}
-
-function getNotificationPermissionState() {
-    if (navigator.permissions) {
-        return navigator.permissions.query({name: 'notifications'})
-                .then(function(result) {
-                    return result.state;
-                });
+()=>{
+    function registerServiceWorker() {
+        return navigator.serviceWorker.register('assets/service-worker.js');
     }
-    return new Promise(function(resolve) {
-        resolve(Notification.permission);
-    });
-}
 
-function subscribeUserToPush(serviceWorkerRegistration) {
-    const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-                'BCExB528mr8IJcwrvz97f7hhzKwKPCPJpkjcsiP6URCEYFHbYTmgjKX-cSWrD3KQH0CZDqEj66e0tJup5yHUh3I'
-        )
-    };
-    return serviceWorkerRegistration.pushManager.subscribe(subscribeOptions)
-            .then(function(pushSubscription) {
-                console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-                return pushSubscription;
+    function askPermission() {
+        return new Promise(function(resolve, reject) {
+            const permissionResult = Notification.requestPermission(function(result) {
+                resolve(result);
             });
-}
-
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-                    .replace(/\-/g, '+')
-                    .replace(/_/g, '/')
-            ;
-    const rawData = window.atob(base64);
-    return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-}
-
-
-getNotificationPermissionState()
-        .then(function(permissionState) {
-            if (permissionState === 'denied') {
-                throw new Error('We weren\'t granted permission.');
-            } else if (permissionState === 'granted') {
-                return registerServiceWorker();
-            } else {
-                return askPermission()
-                        .then(registerServiceWorker);
+            if (permissionResult) {
+                permissionResult.then(resolve, reject);
             }
         })
-        .then(subscribeUserToPush);
+                .then(function(permissionResult) {
+                    if (permissionResult !== 'granted') {
+                        throw new Error('We weren\'t granted permission.');
+                    }
+                });
+    }
+
+    function getNotificationPermissionState() {
+        if (navigator.permissions) {
+            return navigator.permissions.query({name: 'notifications'})
+                    .then(function(result) {
+                        return result.state;
+                    });
+        }
+        return new Promise(function(resolve) {
+            resolve(Notification.permission);
+        });
+    }
+
+    function subscribeUserToPush(serviceWorkerRegistration) {
+        const subscribeOptions = {
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+                    'BCExB528mr8IJcwrvz97f7hhzKwKPCPJpkjcsiP6URCEYFHbYTmgjKX-cSWrD3KQH0CZDqEj66e0tJup5yHUh3I'
+            )
+        };
+        return serviceWorkerRegistration.pushManager.subscribe(subscribeOptions)
+                .then(function(pushSubscription) {
+                    console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+                    return pushSubscription;
+                });
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+                        .replace(/\-/g, '+')
+                        .replace(/_/g, '/')
+                ;
+        const rawData = window.atob(base64);
+        return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+    }
+
+
+    getNotificationPermissionState()
+            .then(function(permissionState) {
+                if (permissionState === 'denied') {
+                    throw new Error('We weren\'t granted permission.');
+                } else if (permissionState === 'granted') {
+                    return registerServiceWorker();
+                } else {
+                    return askPermission()
+                            .then(registerServiceWorker);
+                }
+            })
+            .then(subscribeUserToPush);
+}
 </script>
 </body>
 </html>
