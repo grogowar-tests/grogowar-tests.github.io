@@ -5,39 +5,65 @@
     <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
-<input type="button" value="go" id="go" />
 <script>
-    var pr;
-    function go() {
-        (pr = new Promise(function(resolve, reject){
-            var a = 1, b = 1;
-            setTimeout(function(){
-                if (a == b) {
-                    console.log('asdf');
-                    resolve("arg for resolve");
-                    console.log('zxcv');
-                    resolve("arg for resolve second time");
-                } else {
-                    console.log('asdf111');
-                    reject(new Error("arg for reject"));
-                    console.log('zxcv111');
-                }
-            }, 1000);
-        })).then(function(result){
-            console.log('then later, result: ', result);
-        }).catch(function(result){
-            console.log('catch , result: ', result);
+function registerServiceWorker() {
+    return navigator.serviceWorker.register('assets/service-worker.js');
+}
+
+function askPermission() {
+    return new Promise(function(resolve, reject) {
+        const permissionResult = Notification.requestPermission(function(result) {
+            resolve(result);
         });
+        if (permissionResult) {
+            permissionResult.then(resolve, reject);
+        }
+    })
+            .then(function(permissionResult) {
+                if (permissionResult !== 'granted') {
+                    throw new Error('We weren\'t granted permission.');
+                }
+            });
+}
 
-        pr.then(function(result){
-            console.log('then later, result: ', result);
-        }).catch(error => {
-            console.log('catch later, result: ', error);
-    });
-
+function getNotificationPermissionState() {
+    if (navigator.permissions) {
+        return navigator.permissions.query({name: 'notifications'})
+                .then(function(result) {
+                    return result.state;
+                });
     }
+    return new Promise(function(resolve) {
+        resolve(Notification.permission);
+    });
+}
 
-    document.querySelector("#go").addEventListener('click', go);
+function subscribeUserToPush(serviceWorkerRegistration) {
+    const subscribeOptions = {
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+                'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
+        )
+    };
+    return serviceWorkerRegistration.pushManager.subscribe(subscribeOptions)
+            .then(function(pushSubscription) {
+                console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+                return pushSubscription;
+            });
+}
+
+getNotificationPermissionState()
+        .then(function(permissionState) {
+            if (permissionState === 'denied') {
+                throw new Error('We weren\'t granted permission.');
+            } else if (permissionState === 'granted') {
+                return registerServiceWorker;
+            } else {
+                return askPermission()
+                        .then(registerServiceWorker);
+            }
+        })
+        .then(subscribeUserToPush);
 </script>
 </body>
 </html>
