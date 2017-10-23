@@ -68,7 +68,7 @@ getNotificationPermissionState()
             if (permissionState === 'denied') {
                 throw new Error('We weren\'t granted permission.');
             } else if (permissionState === 'granted') {
-                return registerServiceWorker;
+                return registerServiceWorker();
             } else {
                 return askPermission()
                         .then(registerServiceWorker);
